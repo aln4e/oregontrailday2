@@ -54,8 +54,18 @@ app.get('/location', function(request, response){
 app.get('/turn',function(request,response){
   let game = loadGame(request)
   let step = game.takeTurn()
+  let death = false
   game.save()
-  response.render(step, {game: game})
+  if (game.bodyCount() == 0){
+    death = "Your party is all dead!"
+  }
+  else if (game.supplies.poundsFood <= 0) {
+    death = "You've run out of food, you will all die!"
+  }
+  else if (game.brokeDown) {
+    death = "You have exhausted your " + game.recentlyBroken  + ". You cannot continue your expedition!"
+  }
+  response.render(step, {game: game, death: death})
 })
 
 app.listen(3000, function(){
